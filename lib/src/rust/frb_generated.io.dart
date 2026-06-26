@@ -33,6 +33,9 @@ abstract class VelopackRustLibApiImplPlatform
   bool dco_decode_bool(dynamic raw);
 
   @protected
+  bool dco_decode_box_autoadd_bool(dynamic raw);
+
+  @protected
   UpdateInfo dco_decode_box_autoadd_update_info(dynamic raw);
 
   @protected
@@ -46,6 +49,12 @@ abstract class VelopackRustLibApiImplPlatform
 
   @protected
   List<VelopackAsset> dco_decode_list_velopack_asset(dynamic raw);
+
+  @protected
+  String? dco_decode_opt_String(dynamic raw);
+
+  @protected
+  bool? dco_decode_opt_box_autoadd_bool(dynamic raw);
 
   @protected
   UpdateInfo? dco_decode_opt_box_autoadd_update_info(dynamic raw);
@@ -82,6 +91,9 @@ abstract class VelopackRustLibApiImplPlatform
   bool sse_decode_bool(SseDeserializer deserializer);
 
   @protected
+  bool sse_decode_box_autoadd_bool(SseDeserializer deserializer);
+
+  @protected
   UpdateInfo sse_decode_box_autoadd_update_info(SseDeserializer deserializer);
 
   @protected
@@ -97,6 +109,12 @@ abstract class VelopackRustLibApiImplPlatform
   @protected
   List<VelopackAsset> sse_decode_list_velopack_asset(
       SseDeserializer deserializer);
+
+  @protected
+  String? sse_decode_opt_String(SseDeserializer deserializer);
+
+  @protected
+  bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer);
 
   @protected
   UpdateInfo? sse_decode_opt_box_autoadd_update_info(
@@ -139,6 +157,9 @@ abstract class VelopackRustLibApiImplPlatform
   void sse_encode_bool(bool self, SseSerializer serializer);
 
   @protected
+  void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer);
+
+  @protected
   void sse_encode_box_autoadd_update_info(
       UpdateInfo self, SseSerializer serializer);
 
@@ -156,6 +177,12 @@ abstract class VelopackRustLibApiImplPlatform
   @protected
   void sse_encode_list_velopack_asset(
       List<VelopackAsset> self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_String(String? self, SseSerializer serializer);
+
+  @protected
+  void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer);
 
   @protected
   void sse_encode_opt_box_autoadd_update_info(

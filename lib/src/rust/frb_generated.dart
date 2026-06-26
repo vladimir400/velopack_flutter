@@ -83,24 +83,33 @@ class VelopackRustLib extends BaseEntrypoint<VelopackRustLibApi,
 }
 
 abstract class VelopackRustLibApi extends BaseApi {
-  Stream<int> crateApiVelopackCheckAndDownloadUpdatesWithProgress();
+  Stream<int> crateApiVelopackCheckAndDownloadUpdatesWithProgress(
+      {String? channel, bool? allowDowngrade});
 
   Future<String> crateApiVelopackCurrentVersion();
 
-  Future<UpdateInfo?> crateApiVelopackGetLatestUpdateInfo();
+  Future<UpdateInfo?> crateApiVelopackGetLatestUpdateInfo(
+      {String? channel, bool? allowDowngrade});
 
   Future<void> crateApiVelopackInitApp();
 
-  Future<void> crateApiVelopackInitVelopack({required String url});
+  Future<void> crateApiVelopackInitVelopack(
+      {required String url, String? channel, required bool allowDowngrade});
 
-  Future<bool> crateApiVelopackIsUpdateAvailable();
+  Future<bool> crateApiVelopackIsUpdateAvailable(
+      {String? channel, bool? allowDowngrade});
 
-  Future<void> crateApiVelopackUpdateAndExit();
+  Future<void> crateApiVelopackUpdateAndExit(
+      {String? channel, bool? allowDowngrade});
 
-  Future<void> crateApiVelopackUpdateAndRestart();
+  Future<void> crateApiVelopackUpdateAndRestart(
+      {String? channel, bool? allowDowngrade});
 
   Future<void> crateApiVelopackWaitExitThenUpdate(
-      {required bool silent, required bool restart});
+      {required bool silent,
+      required bool restart,
+      String? channel,
+      bool? allowDowngrade});
 }
 
 class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
@@ -113,12 +122,15 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   });
 
   @override
-  Stream<int> crateApiVelopackCheckAndDownloadUpdatesWithProgress() {
+  Stream<int> crateApiVelopackCheckAndDownloadUpdatesWithProgress(
+      {String? channel, bool? allowDowngrade}) {
     final progressSink = RustStreamSink<int>();
     unawaited(handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_StreamSink_i_16_Sse(progressSink, serializer);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 1, port: port_);
       },
@@ -127,7 +139,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackCheckAndDownloadUpdatesWithProgressConstMeta,
-      argValues: [progressSink],
+      argValues: [progressSink, channel, allowDowngrade],
       apiImpl: this,
     )));
     return progressSink.stream;
@@ -137,7 +149,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
       get kCrateApiVelopackCheckAndDownloadUpdatesWithProgressConstMeta =>
           const TaskConstMeta(
             debugName: "check_and_download_updates_with_progress",
-            argNames: ["progressSink"],
+            argNames: ["progressSink", "channel", "allowDowngrade"],
           );
 
   @override
@@ -165,10 +177,13 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
       );
 
   @override
-  Future<UpdateInfo?> crateApiVelopackGetLatestUpdateInfo() {
+  Future<UpdateInfo?> crateApiVelopackGetLatestUpdateInfo(
+      {String? channel, bool? allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 3, port: port_);
       },
@@ -177,7 +192,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackGetLatestUpdateInfoConstMeta,
-      argValues: [],
+      argValues: [channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -185,7 +200,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackGetLatestUpdateInfoConstMeta =>
       const TaskConstMeta(
         debugName: "get_latest_update_info",
-        argNames: [],
+        argNames: ["channel", "allowDowngrade"],
       );
 
   @override
@@ -212,11 +227,14 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
       );
 
   @override
-  Future<void> crateApiVelopackInitVelopack({required String url}) {
+  Future<void> crateApiVelopackInitVelopack(
+      {required String url, String? channel, required bool allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_String(url, serializer);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 5, port: port_);
       },
@@ -225,7 +243,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackInitVelopackConstMeta,
-      argValues: [url],
+      argValues: [url, channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -233,14 +251,17 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackInitVelopackConstMeta =>
       const TaskConstMeta(
         debugName: "init_velopack",
-        argNames: ["url"],
+        argNames: ["url", "channel", "allowDowngrade"],
       );
 
   @override
-  Future<bool> crateApiVelopackIsUpdateAvailable() {
+  Future<bool> crateApiVelopackIsUpdateAvailable(
+      {String? channel, bool? allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 6, port: port_);
       },
@@ -249,7 +270,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackIsUpdateAvailableConstMeta,
-      argValues: [],
+      argValues: [channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -257,14 +278,17 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackIsUpdateAvailableConstMeta =>
       const TaskConstMeta(
         debugName: "is_update_available",
-        argNames: [],
+        argNames: ["channel", "allowDowngrade"],
       );
 
   @override
-  Future<void> crateApiVelopackUpdateAndExit() {
+  Future<void> crateApiVelopackUpdateAndExit(
+      {String? channel, bool? allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 7, port: port_);
       },
@@ -273,7 +297,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackUpdateAndExitConstMeta,
-      argValues: [],
+      argValues: [channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -281,14 +305,17 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackUpdateAndExitConstMeta =>
       const TaskConstMeta(
         debugName: "update_and_exit",
-        argNames: [],
+        argNames: ["channel", "allowDowngrade"],
       );
 
   @override
-  Future<void> crateApiVelopackUpdateAndRestart() {
+  Future<void> crateApiVelopackUpdateAndRestart(
+      {String? channel, bool? allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 8, port: port_);
       },
@@ -297,7 +324,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackUpdateAndRestartConstMeta,
-      argValues: [],
+      argValues: [channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -305,17 +332,22 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackUpdateAndRestartConstMeta =>
       const TaskConstMeta(
         debugName: "update_and_restart",
-        argNames: [],
+        argNames: ["channel", "allowDowngrade"],
       );
 
   @override
   Future<void> crateApiVelopackWaitExitThenUpdate(
-      {required bool silent, required bool restart}) {
+      {required bool silent,
+      required bool restart,
+      String? channel,
+      bool? allowDowngrade}) {
     return handler.executeNormal(NormalTask(
       callFfi: (port_) {
         final serializer = SseSerializer(generalizedFrbRustBinding);
         sse_encode_bool(silent, serializer);
         sse_encode_bool(restart, serializer);
+        sse_encode_opt_String(channel, serializer);
+        sse_encode_opt_box_autoadd_bool(allowDowngrade, serializer);
         pdeCallFfi(generalizedFrbRustBinding, serializer,
             funcId: 9, port: port_);
       },
@@ -324,7 +356,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
         decodeErrorData: sse_decode_AnyhowException,
       ),
       constMeta: kCrateApiVelopackWaitExitThenUpdateConstMeta,
-      argValues: [silent, restart],
+      argValues: [silent, restart, channel, allowDowngrade],
       apiImpl: this,
     ));
   }
@@ -332,7 +364,7 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   TaskConstMeta get kCrateApiVelopackWaitExitThenUpdateConstMeta =>
       const TaskConstMeta(
         debugName: "wait_exit_then_update",
-        argNames: ["silent", "restart"],
+        argNames: ["silent", "restart", "channel", "allowDowngrade"],
       );
 
   @protected
@@ -355,6 +387,12 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
 
   @protected
   bool dco_decode_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw as bool;
+  }
+
+  @protected
+  bool dco_decode_box_autoadd_bool(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return raw as bool;
   }
@@ -387,6 +425,18 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   List<VelopackAsset> dco_decode_list_velopack_asset(dynamic raw) {
     // Codec=Dco (DartCObject based), see doc to use other codecs
     return (raw as List<dynamic>).map(dco_decode_velopack_asset).toList();
+  }
+
+  @protected
+  String? dco_decode_opt_String(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_String(raw);
+  }
+
+  @protected
+  bool? dco_decode_opt_box_autoadd_bool(dynamic raw) {
+    // Codec=Dco (DartCObject based), see doc to use other codecs
+    return raw == null ? null : dco_decode_box_autoadd_bool(raw);
   }
 
   @protected
@@ -480,6 +530,12 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   }
 
   @protected
+  bool sse_decode_box_autoadd_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    return (sse_decode_bool(deserializer));
+  }
+
+  @protected
   UpdateInfo sse_decode_box_autoadd_update_info(SseDeserializer deserializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
     return (sse_decode_update_info(deserializer));
@@ -516,6 +572,28 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
       ans_.add(sse_decode_velopack_asset(deserializer));
     }
     return ans_;
+  }
+
+  @protected
+  String? sse_decode_opt_String(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_String(deserializer));
+    } else {
+      return null;
+    }
+  }
+
+  @protected
+  bool? sse_decode_opt_box_autoadd_bool(SseDeserializer deserializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    if (sse_decode_bool(deserializer)) {
+      return (sse_decode_box_autoadd_bool(deserializer));
+    } else {
+      return null;
+    }
   }
 
   @protected
@@ -637,6 +715,12 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
   }
 
   @protected
+  void sse_encode_box_autoadd_bool(bool self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+    sse_encode_bool(self, serializer);
+  }
+
+  @protected
   void sse_encode_box_autoadd_update_info(
       UpdateInfo self, SseSerializer serializer) {
     // Codec=Sse (Serialization based), see doc to use other codecs
@@ -671,6 +755,26 @@ class VelopackRustLibApiImpl extends VelopackRustLibApiImplPlatform
     sse_encode_i_32(self.length, serializer);
     for (final item in self) {
       sse_encode_velopack_asset(item, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_String(String? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_String(self, serializer);
+    }
+  }
+
+  @protected
+  void sse_encode_opt_box_autoadd_bool(bool? self, SseSerializer serializer) {
+    // Codec=Sse (Serialization based), see doc to use other codecs
+
+    sse_encode_bool(self != null, serializer);
+    if (self != null) {
+      sse_encode_box_autoadd_bool(self, serializer);
     }
   }
 
